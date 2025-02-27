@@ -9,7 +9,7 @@ class Account extends Model
     protected $fillable = ['user_id', 'balance', 'credit_limit'];
 
     /**
-     * Implementa relação 1 para 1 com a model User. 
+     * Implementa relação 1 para 1 com a model User.
      *
      */
     public function user()
