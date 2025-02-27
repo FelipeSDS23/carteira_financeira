@@ -81,4 +81,12 @@ class User extends Authenticatable implements MustVerifyEmail
      
          return true;
      }
+
+    /**
+     * Implementa relação 1 para 1 com a model Accounts.
+     */
+     public function account()
+    {
+        return $this->hasOne(Account::class);
+    }
 }
