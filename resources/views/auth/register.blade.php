@@ -17,7 +17,7 @@
         </div>
 
         <!-- CPF -->
-        <div class="mt-4">
+        <div class="mt-4" x-data>
             <x-input-label for="cpf" :value="__('CPF')" />
 
             <x-text-input id="cpf" class="block mt-1 w-full"
@@ -26,6 +26,7 @@
                             required 
                             autocomplete="new-cpf"
                             maxlength="14"
+                            x-mask="999.999.999-99" placeholder="999.999.999-99"
                              />
 
             <x-input-error :messages="$errors->get('cpf')" class="mt-2" />
