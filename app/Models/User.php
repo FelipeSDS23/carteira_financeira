@@ -44,6 +44,41 @@ class User extends Authenticatable implements MustVerifyEmail
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            // 'cpf' => 'hashed', // !!!!REMOVIDO CRIPTOGRAFIA DO CPF!!!!
         ];
     }
+
+    /**
+     * Está função verifica se o cpf é valido.
+     *
+     * @return bool
+     */
+    public static function isValidCpf($cpf): bool
+     {
+         // Remove caracteres não numéricos
+         $cpf = preg_replace('/[^0-9]/', '', $cpf);
+         
+         // Verifica se o CPF tem 11 dígitos
+         if (strlen($cpf) != 11) {
+             return false;
+         }
+     
+         // Verifica se todos os dígitos são iguais
+         if (preg_match('/^(\d)\1{10}$/', $cpf)) {
+             return false;
+         }
+     
+         // Validação do primeiro dígito verificador
+         for ($t = 9; $t < 11; $t++) {
+             for ($d = 0, $c = 0; $c < $t; $c++) {
+                 $d += $cpf[$c] * (($t + 1) - $c);
+             }
+             $d = ((10 * $d) % 11) % 10;
+             if ($cpf[$c] != $d) {
+                 return false;
+             }
+         }
+     
+         return true;
+     }
 }

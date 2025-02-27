@@ -27,12 +27,23 @@ class RegisteredUserController extends Controller
      *
      * @throws \Illuminate\Validation\ValidationException
      */
+
     public function store(Request $request): RedirectResponse
     {
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
-            'cpf' => ['required', 'string', 'size:14', 'regex:/^\d{3}\.\d{3}\.\d{3}-\d{2}$/', 'unique:' . User::class], // CPF com máscara
+            'cpf' => ['required',
+                'string', 
+                'size:14', 
+                'regex:/^\d{3}\.\d{3}\.\d{3}-\d{2}$/', 
+                'unique:' . User::class,
+                function ($attribute, $value, $fail) { // Está função realiza a validação do cpf
+                    if (!User::isValidCpf($value)) { // Aqui o cpf é validado utilizando o método statico da model User
+                        $fail('O CPF informado é inválido.');
+                    }
+                }
+            ],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
