@@ -5,44 +5,41 @@
         </h2>
     </x-slot>
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-300 dark:text-gray-500">
-                    {{ __("You're logged in!") }}
+    <div class="py-3">
+        <div class="container px-4">
+            <div class="dark:bg-dark shadow-sm rounded text-warning">
+
+                <div class="py-1 px-4 fs-4">
+                    <p>Olá {{ explode(' ', Auth::user()->name)[0] }}!</p>
                 </div>
 
-                
-                <table class="table bg-primary">
-                    <thead>
-                      <tr>
-                        <th scope="col">#</th>
-                        <th scope="col">First</th>
-                        <th scope="col">Last</th>
-                        <th scope="col">Handle</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr>
-                        <th scope="row">1</th>
-                        <td>Mark</td>
-                        <td>Otto</td>
-                        <td>@mdo</td>
-                      </tr>
-                      <tr>
-                        <th scope="row">2</th>
-                        <td>Jacob</td>
-                        <td>Thornton</td>
-                        <td>@fat</td>
-                      </tr>
-                      <tr>
-                        <th scope="row">3</th>
-                        <td colspan="2">Larry the Bird</td>
-                        <td>@twitter</td>
-                      </tr>
-                    </tbody>
-                </table>
 
+                <div class="card shadow-lg p-4 bg-dark">
+                    <div class="mb-3">
+                        <h5 class="text-warning">Saldo Disponível:</h5>
+                        <p class="fw-bold text-success fs-4">R$ 2.500,00</p>
+                    </div>
+                    <div class="mb-3">
+                        <h5 class="text-warning">Limite de Crédito:</h5>
+                        <p class="fw-bold text-primary fs-4">R$ 5.000,00</p>
+                    </div>
+                    <div class="d-flex gap-3">
+
+                        <button class="btn btn-primary px-3 d-flex align-items-center justify-content-center">
+                            <span class="material-symbols-outlined">
+                                sync_alt
+                            </span>
+                            <span class="ml-1">Transferir</span>
+                        </button>
+
+                        <button class="btn btn-success px-3 d-flex align-items-center justify-content-center">
+                            <span class="material-symbols-outlined">
+                                savings
+                            </span>
+                            <span class="ml-1">Depositar</span>
+                        </button>
+                    </div>
+                </div>
 
             </div>
         </div>
