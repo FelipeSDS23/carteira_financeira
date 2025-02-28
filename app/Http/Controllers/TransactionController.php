@@ -56,8 +56,13 @@ class TransactionController extends Controller
         //Cria registro da transação
         $transaction = Transaction::create([
             'account_id' => Auth::user()->account->id,
+            'origin_account_user_name' => Auth::user()->name,
+            'origin_account_user_cpf' => Auth::user()->cpf,
+            
             'destination_account_id' => $destinationUserAccount->id,
-            'destination_account_id' => $destinationUserAccount->id,
+            'destination_account_user_name' => $destinationUser->name,
+            'destination_account_user_cpf' => $destinationUser->cpf,
+
             'amount' => $amount,
             'type' => 'transfer',
             'status' => 'pending'

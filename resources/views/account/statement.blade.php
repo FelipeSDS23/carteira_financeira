@@ -17,16 +17,18 @@
                         <thead class="text-white">
                             <tr>
                                 <th>ID</th>
-                                <th>Destinatário</th>
+                                <th>Para</th>
+                                <th>CPF</th>
                                 <th>Valor</th>
-                                <th>Data</th>
+                                <th>Data e Hora</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach ($transfersMade as $transfer)
                                 <tr>
                                     <td>{{ $transfer->id }}</td>
-                                    <td>{{ $transfer->destination_account_id }}</td>
+                                    <td>{{ $transfer->destination_account_user_name }}</td>
+                                    <td>{{ $transfer->destination_account_user_cpf }}</td>
                                     <td>R$ {{ number_format($transfer->amount, 2, ',', '.') }}</td>
                                     <td>{{ date('d/m/Y H:i', strtotime($transfer->created_at)) }}</td>
                                 </tr>
@@ -40,16 +42,18 @@
                         <thead class="text-white">
                             <tr>
                                 <th>ID</th>
-                                <th>Remetente</th>
+                                <th>Para</th>
+                                <th>CPF</th>
                                 <th>Valor</th>
-                                <th>Data</th>
+                                <th>Data e Hora</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach ($transfersReceived as $transfer)
                                 <tr>
                                     <td>{{ $transfer->id }}</td>
-                                    <td>{{ $transfer->account_id }}</td>
+                                    <td>{{ $transfer->origin_account_user_name }}</td>
+                                    <td>{{ $transfer->origin_account_user_cpf }}</td>
                                     <td>R$ {{ number_format($transfer->amount, 2, ',', '.') }}</td>
                                     <td>{{ date('d/m/Y H:i', strtotime($transfer->created_at)) }}</td>
                                 </tr>

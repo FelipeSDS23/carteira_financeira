@@ -13,12 +13,18 @@ return new class extends Migration
     {
         Schema::create('transactions', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('account_id')->constrained()->onDelete('cascade'); // Chave estrangeira para a tabela accounts / Conta de origem
-            // $table->foreignId('origin_account_id')->nullable()->constrained('accounts')->onDelete('set null'); // Conta de origem
-            $table->foreignId('destination_account_id')->nullable()->constrained('accounts')->onDelete('set null'); // Conta de destino
+            // Dados do remetente
+            $table->foreignId('account_id')->constrained()->onDelete('cascade'); // Chave estrangeira referenciando a conta de origem
+            $table->string('origin_account_user_name'); // Nome do usuário associado a conta de origem
+            $table->string('origin_account_user_cpf', 14); // CPF do usuário associado a conta de origem
+            // Dados do destinatário
+            $table->integer('destination_account_id'); // Id da conta de destino
+            $table->string('destination_account_user_name'); // Nome do usuário associado a conta de destino
+            $table->string('destination_account_user_cpf', 14); // CPF do usuário associado a conta de destino
+            // Dados da transação
             $table->decimal('amount', 11, 2); // Valor da transação
             $table->enum('type', ['deposit', 'transfer']); // Tipo da transação (depósito ou transferência)
-            $table->enum('status', ['pending', 'approved', 'canceled']);
+            $table->enum('status', ['pending', 'approved', 'canceled']); // Status da transação
             $table->timestamps();
         });
     }
@@ -30,7 +36,7 @@ return new class extends Migration
     {
         Schema::table('transactions', function (Blueprint $table) {
             // $table->dropForeign(['origin_account_id']);
-            $table->dropForeign(['destination_account_id']);
+            // $table->dropForeign(['destination_account_id']);
             $table->dropForeign(['account_id']);
         });
         
