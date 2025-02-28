@@ -13,53 +13,60 @@
 
                     <!-- Tabela de Transferências Feitas -->
                     <h3 class="mt-4 text-white">Transferências Feitas</h3>
-                    <table class="table table-bordered">
-                        <thead class="text-white">
-                            <tr>
-                                <th>ID</th>
-                                <th>Para</th>
-                                <th>CPF</th>
-                                <th>Valor</th>
-                                <th>Data e Hora</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($transfersMade as $transfer)
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <thead class="text-white">
                                 <tr>
-                                    <td>{{ $transfer->id }}</td>
-                                    <td>{{ $transfer->destination_account_user_name }}</td>
-                                    <td>{{ $transfer->destination_account_user_cpf }}</td>
-                                    <td>R$ {{ number_format($transfer->amount, 2, ',', '.') }}</td>
-                                    <td>{{ date('d/m/Y H:i', strtotime($transfer->created_at)) }}</td>
+                                    <th>ID</th>
+                                    <th>Para</th>
+                                    <th>CPF</th>
+                                    <th>Valor</th>
+                                    <th>Data e Hora</th>
                                 </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                @foreach ($transfersMade as $transfer)
+                                    <tr>
+                                        <td>{{ $transfer->id }}</td>
+                                        <td>{{ $transfer->destination_account_user_name }}</td>
+                                        <td>{{ $transfer->destination_account_user_cpf }}</td>
+                                        <td>R$ {{ number_format($transfer->amount, 2, ',', '.') }}</td>
+                                        <td>{{ date('d/m/Y H:i', strtotime($transfer->created_at)) }}</td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+
 
                     <!-- Tabela de Transferências Recebidas -->
                     <h3 class="mt-4 text-white">Transferências Recebidas</h3>
-                    <table class="table table-bordered">
-                        <thead class="text-white">
-                            <tr>
-                                <th>ID</th>
-                                <th>Para</th>
-                                <th>CPF</th>
-                                <th>Valor</th>
-                                <th>Data e Hora</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($transfersReceived as $transfer)
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <thead class="text-white">
                                 <tr>
-                                    <td>{{ $transfer->id }}</td>
-                                    <td>{{ $transfer->origin_account_user_name }}</td>
-                                    <td>{{ $transfer->origin_account_user_cpf }}</td>
-                                    <td>R$ {{ number_format($transfer->amount, 2, ',', '.') }}</td>
-                                    <td>{{ date('d/m/Y H:i', strtotime($transfer->created_at)) }}</td>
+                                    <th>ID</th>
+                                    <th>Para</th>
+                                    <th>CPF</th>
+                                    <th>Valor</th>
+                                    <th>Data e Hora</th>
                                 </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                @foreach ($transfersReceived as $transfer)
+                                    <tr>
+                                        <td>{{ $transfer->id }}</td>
+                                        <td>{{ $transfer->origin_account_user_name }}</td>
+                                        <td>{{ $transfer->origin_account_user_cpf }}</td>
+                                        <td>R$ {{ number_format($transfer->amount, 2, ',', '.') }}</td>
+                                        <td>{{ date('d/m/Y H:i', strtotime($transfer->created_at)) }}</td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+
+
                 </div>
 
 
