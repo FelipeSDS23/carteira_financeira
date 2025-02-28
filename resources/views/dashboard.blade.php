@@ -25,19 +25,24 @@
                     </div>
                     <div class="d-flex gap-3">
 
-                        <button class="btn btn-primary px-3 d-flex align-items-center justify-content-center">
-                            <span class="material-symbols-outlined">
-                                sync_alt
-                            </span>
-                            <span class="ml-1">Transferir</span>
-                        </button>
+                        <a href="{{ route('transaction.transfer') }}">
+                          <button class="btn btn-primary px-3 d-flex align-items-center justify-content-center">
+                              <span class="material-symbols-outlined">
+                                  sync_alt
+                              </span>
+                              <span class="ml-1">Transferir</span>
+                          </button>
+                        </a>
 
-                        <button class="btn btn-success px-3 d-flex align-items-center justify-content-center">
-                            <span class="material-symbols-outlined">
-                                savings
-                            </span>
-                            <span class="ml-1">Depositar</span>
-                        </button>
+                        <a href="{{ route('transaction.deposit') }}">
+                          <button class="btn btn-success px-3 d-flex align-items-center justify-content-center">
+                              <span class="material-symbols-outlined">
+                                  savings
+                              </span>
+                              <span class="ml-1">Depositar</span>
+                          </button>
+                        </a>
+
                     </div>
                 </div>
 

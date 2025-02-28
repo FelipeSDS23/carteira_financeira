@@ -17,11 +17,19 @@ class TransactionController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Exibe a página com o formulário de transfência
      */
-    public function create()
+    public function transfer()
     {
-        //
+        return view('transaction.transfer');
+    }
+
+    /**
+     * Exibe a página com o formulário de depósito
+     */
+    public function deposit()
+    {
+        return view('transaction.deposit');
     }
 
     /**
