@@ -9,44 +9,42 @@
         <div class="container px-4">
             <div class="dark:bg-dark shadow-sm rounded text-warning">
 
-                <div class="card shadow-lg p-4 bg-dark">
-                    
+              <div class="card shadow-lg p-0 bg-dark">
 
-                    <div class="input-group mb-3">
-                        <span class="input-group-text" id="basic-addon1">@</span>
-                        <input type="text" class="form-control" placeholder="Username" aria-label="Username" aria-describedby="basic-addon1">
-                      </div>
-                      
-                      <div class="input-group mb-3">
-                        <input type="text" class="form-control" placeholder="Recipient's username" aria-label="Recipient's username" aria-describedby="basic-addon2">
-                        <span class="input-group-text" id="basic-addon2">@example.com</span>
-                      </div>
-                      
-                      <label for="basic-url" class="form-label">Your vanity URL</label>
-                      <div class="input-group mb-3">
-                        <span class="input-group-text" id="basic-addon3">https://example.com/users/</span>
-                        <input type="text" class="form-control" id="basic-url" aria-describedby="basic-addon3">
-                      </div>
-                      
-                      <div class="input-group mb-3">
-                        <span class="input-group-text">$</span>
-                        <input type="text" class="form-control" aria-label="Amount (to the nearest dollar)">
-                        <span class="input-group-text">.00</span>
-                      </div>
-                      
-                      <div class="input-group mb-3">
-                        <input type="text" class="form-control" placeholder="Username" aria-label="Username">
-                        <span class="input-group-text">@</span>
-                        <input type="text" class="form-control" placeholder="Server" aria-label="Server">
-                      </div>
-                      
-                      <div class="input-group">
-                        <span class="input-group-text">With textarea</span>
-                        <textarea class="form-control" aria-label="With textarea"></textarea>
-                      </div>
-
-
+                <div class="d-flex mb-3 p-2">
+                    <div class="text-warning">
+                        Saldo atual: R$ 3.000,00
+                    </div>
+                    <div class="text-warning ml-3">
+                        Limite atual: R$ 3.000,00
+                    </div>
                 </div>
+
+                <div class="container">
+                    <div class="card p-4 bg-dark">
+                        <form action="{{ route('transaction.store') }}" method="POST" class="bg-dark text-white">
+                            @csrf
+
+                            <div class="mb-3" x-data="{
+                                valor: '',
+                                formatValor() {
+                                    this.valor = parseFloat(this.valor.replace(/[^\d]/g, '') / 100).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }).replace('R$', '').trim();
+                                }
+                            }">
+                                <label for="valor" class="form-label">Valor do depósito:</label>
+                                <input type="text" class="form-control" id="valor" x-model="valor" name="amount"
+                                    x-on:input="formatValor" placeholder="Informe o valor a ser depositado"
+                                    required>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary">Depositar</button>
+
+                        </form>
+                    </div>
+                </div>
+
+
+            </div>
 
             </div>
         </div>

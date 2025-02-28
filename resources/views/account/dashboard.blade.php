@@ -17,11 +17,11 @@
                 <div class="card shadow-lg p-4 bg-dark">
                     <div class="mb-3">
                         <h5 class="text-warning">Saldo Disponível:</h5>
-                        <p class="fw-bold text-success fs-4">R$ 2.500,00</p>
+                        <p class="fw-bold text-success fs-4">R$ {{ $userAccount->balance }}</p>
                     </div>
                     <div class="mb-3">
                         <h5 class="text-warning">Limite de Crédito:</h5>
-                        <p class="fw-bold text-primary fs-4">R$ 5.000,00</p>
+                        <p class="fw-bold text-primary fs-4">R$ {{ $userAccount->credit_limit }}</p>
                     </div>
                     <div class="d-flex gap-3">
 

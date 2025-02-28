@@ -13,6 +13,20 @@ class AccountController extends Controller
     /**
      * Exibe o extrato da conta
      */
+    public function dashboard()
+    {
+        $userAccount = Auth::user()->account;
+
+        //Formata a exibição dos valores monetários
+        $userAccount['balance'] = number_format($userAccount['balance'], 2, ',', '.');
+        $userAccount['credit_limit'] = number_format($userAccount['credit_limit'], 2, ',', '.');
+        
+        return view('account.dashboard', compact('userAccount'));
+    }
+
+    /**
+     * Exibe o extrato da conta
+     */
     public function statement()
     {
         $user = Auth::user();

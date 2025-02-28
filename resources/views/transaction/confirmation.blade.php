@@ -9,11 +9,20 @@
         <div class="container px-4">
             <div class="dark:bg-dark shadow-sm rounded text-warning">
                 <h1 class="text-white">Confirmação de transação</h1>
-                <h3>Você está realizando uma transferência de R${{$amount}} para {{$destinatario}} - {{$cpf}}</h3>
+                <h3>Você está realizando uma transferência de R${{$amount}} para {{$destination_account_user_name}} - {{$destination_account_user_cpf}}</h3>
 
                 <div class="container mt-3">
-                    <button class="btn btn-success m-3">Confirmar</button>
-                    <button class="btn btn-danger m-3">Cancelar</button>
+                    <form action="{{ route('transaction.confirm') }}">
+                        @csrf
+                        <input type="hidden" name="" value="{{$id}}">
+                        <button class="btn btn-success m-3">Confirmar</button>
+                    </form>
+
+                    <form action="{{ route('transaction.confirm') }}">
+                        @csrf
+                        <input type="hidden" name="" value="{{$id}}">
+                        <button class="btn btn-danger m-3">Cancelar</button>
+                    </form>
                 </div>
                 
             </div>
