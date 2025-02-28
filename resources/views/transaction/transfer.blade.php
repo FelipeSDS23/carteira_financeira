@@ -9,9 +9,9 @@
         <div class="container px-4">
             <div class="dark:bg-dark shadow-sm rounded text-warning">
 
-                <div class="card shadow-lg p-4 bg-dark">
+                <div class="card shadow-lg p-0 bg-dark">
 
-                    <div class="d-flex mb-3">
+                    <div class="d-flex mb-3 p-2">
                         <div class="text-warning">
                             Saldo atual: R$ 3.000,00
                         </div>
@@ -21,8 +21,9 @@
                     </div>
 
                     <div class="container">
-                        <div class="card p-4">
-                            <form>
+                        <div class="card p-4 bg-dark">
+                            <form class="bg-dark text-white">
+                                @csrf
 
                                 <div class="mb-3">
                                     <label for="transferType" class="form-label">Transferir por:</label>
@@ -33,8 +34,7 @@
                                 </div>
 
                                 <div class="mb-3" x-data>
-                                    <label for="destinationAccount" class="form-label">Destinatário (CPF ou
-                                        E-mail)</label>
+                                    <label for="destinationAccount" class="form-label">Destinatário:</label>
                                     <input type="text" class="form-control" id="destinationAccount"
                                         placeholder="Informe o CPF do destinatário" required x-mask="999.999.999-99">
                                 </div>
@@ -45,7 +45,7 @@
                                         this.valor = parseFloat(this.valor.replace(/[^\d]/g, '') / 100).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }).replace('R$', '').trim();
                                     }
                                 }">
-                                    <label for="valor" class="form-label">Valor a Transferir</label>
+                                    <label for="valor" class="form-label">Valor a Transferir:</label>
                                     <input type="text" class="form-control" id="valor" x-model="valor"
                                         x-on:input="formatValor" placeholder="Informe o valor a ser transferido"
                                         required>
