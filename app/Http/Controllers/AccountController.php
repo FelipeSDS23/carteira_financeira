@@ -9,11 +9,11 @@ use Illuminate\Http\Request;
 class AccountController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Exibe o extrato da conta
      */
-    public function index()
+    public function statement()
     {
-        //
+        return view('account.statement');
     }
 
     /**

@@ -3,6 +3,7 @@
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TransactionController;
+use App\Http\Controllers\AccountController;
 
 Route::get('/', function () {
     return view('auth.login');
@@ -23,6 +24,10 @@ Route::prefix('transaction')->middleware('auth')->group(function () {
     Route::get('/transfer', [TransactionController::class, 'transfer'])->name('transaction.transfer');
     Route::get('/deposit', [TransactionController::class, 'deposit'])->name('transaction.deposit');
     Route::post('/deposit', [TransactionController::class, 'storeTransaction'])->name('transaction.deposit');
+});
+
+Route::prefix('account')->middleware('auth')->group(function () {
+    Route::get('/statement', [AccountController::class, 'statement'])->name('account.statement');
 });
 
 require __DIR__.'/auth.php';
