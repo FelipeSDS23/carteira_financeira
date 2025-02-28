@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Account;
+use App\Models\Transaction;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class AccountController extends Controller
 {
@@ -13,7 +15,26 @@ class AccountController extends Controller
      */
     public function statement()
     {
-        return view('account.statement');
+        $user = Auth::user();
+        $userAccount = Auth::user()->account;
+
+        //Recupera todas as transferências feitas pelo usuário autenticado
+        $transfersMade = Transaction::where('account_id', $userAccount->id)->with('account')->get();
+        //Recupera todas as transferências recebidas pelo usuário autenticado
+        $transfersReceived = Transaction::where('destination_account_id', $userAccount->id)->get();
+
+        // dd($transfersReceived);
+
+        // "id" => 55
+        // "account_id" => 3
+        // "destination_account_id" => 2
+        // "amount" => "930.50"
+        // "type" => "transfer"
+        // "status" => "pending"
+        // "created_at" => "2025-02-28 13:36:27"
+        // "updated_at" => "2025-02-28 13:36:27"
+
+        return view('account.statement', compact('transfersMade', 'transfersReceived'));
     }
 
     /**
