@@ -24,7 +24,14 @@ class TransactionController extends Controller
      */
     public function transfer()
     {
-        return view('transaction.transfer');
+        $account = Auth::user()->account;
+
+        $account['balance'] = number_format($account['balance'], 2, ',', '.');
+        $account['credit_limit'] = number_format($account['credit_limit'], 2, ',', '.');
+
+        // dd($account);
+
+        return view('transaction.transfer', compact('account'));
     }
 
     /**
@@ -32,7 +39,12 @@ class TransactionController extends Controller
      */
     public function deposit()
     {
-        return view('transaction.deposit');
+        $account = Auth::user()->account;
+
+        $account['balance'] = number_format($account['balance'], 2, ',', '.');
+        $account['credit_limit'] = number_format($account['credit_limit'], 2, ',', '.');
+
+        return view('transaction.deposit', compact('account'));
     }
 
     /**
@@ -95,6 +107,16 @@ class TransactionController extends Controller
 
         return redirect()->route('account.dashboard');
 
+    }
+
+    /**
+     *  Reverte a transação
+     */
+    public function reverseTransaction(Request $request)
+    {
+        dd($request);
+
+        //reverter somente transações com status completo
     }
 
     /**

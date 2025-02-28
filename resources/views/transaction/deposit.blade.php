@@ -13,10 +13,10 @@
 
                 <div class="d-flex mb-3 p-2">
                     <div class="text-warning">
-                        Saldo atual: R$ 3.000,00
+                        Saldo atual: R$ {{ $account->balance }}
                     </div>
                     <div class="text-warning ml-3">
-                        Limite atual: R$ 3.000,00
+                        Limite atual: R$ {{ $account->credit_limit }}
                     </div>
                 </div>
 

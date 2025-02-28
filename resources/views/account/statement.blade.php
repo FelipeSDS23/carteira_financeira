@@ -22,6 +22,8 @@
                                     <th>CPF</th>
                                     <th>Valor</th>
                                     <th>Data e Hora</th>
+                                    <th>Status</th>
+                                    <th></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -32,6 +34,14 @@
                                         <td>{{ $transfer->destination_account_user_cpf }}</td>
                                         <td>R$ {{ number_format($transfer->amount, 2, ',', '.') }}</td>
                                         <td>{{ date('d/m/Y H:i', strtotime($transfer->created_at)) }}</td>
+                                        <td>{{ $transfer->status }}</td>
+                                        <td>
+                                            <form action="{{ route('transaction.reverse') }}" method="POST">
+                                                @csrf
+                                                <input type="hidden" name="transactionId" value="{{ $transfer->id }}">
+                                                <button type="submit" class="btn btn-danger">Reverter</button>
+                                            </form>
+                                        </td>
                                     </tr>
                                 @endforeach
                             </tbody>
@@ -46,10 +56,12 @@
                             <thead class="text-white">
                                 <tr>
                                     <th>ID</th>
-                                    <th>Para</th>
+                                    <th>De</th>
                                     <th>CPF</th>
                                     <th>Valor</th>
                                     <th>Data e Hora</th>
+                                    <th>Status</th>
+                                    <th></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -60,6 +72,14 @@
                                         <td>{{ $transfer->origin_account_user_cpf }}</td>
                                         <td>R$ {{ number_format($transfer->amount, 2, ',', '.') }}</td>
                                         <td>{{ date('d/m/Y H:i', strtotime($transfer->created_at)) }}</td>
+                                        <td>{{ $transfer->status }}</td>
+                                        <td>
+                                            <form action="{{ route('transaction.reverse') }}" method="POST">
+                                                @csrf
+                                                <input type="hidden" name="transactionId" value="{{ $transfer->id }}">
+                                                <button type="submit" class="btn btn-danger">Reverter</button>
+                                            </form>
+                                        </td>
                                     </tr>
                                 @endforeach
                             </tbody>
