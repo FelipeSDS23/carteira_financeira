@@ -22,6 +22,7 @@ Route::middleware('auth')->group(function () {
 Route::prefix('transaction')->middleware('auth')->group(function () {
     Route::get('/transfer', [TransactionController::class, 'transfer'])->name('transaction.transfer');
     Route::get('/deposit', [TransactionController::class, 'deposit'])->name('transaction.deposit');
+    Route::post('/deposit', [TransactionController::class, 'storeTransaction'])->name('transaction.deposit');
 });
 
 require __DIR__.'/auth.php';

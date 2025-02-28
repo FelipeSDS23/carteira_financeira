@@ -18,6 +18,7 @@ return new class extends Migration
             $table->foreignId('destination_account_id')->nullable()->constrained('accounts')->onDelete('set null'); // Conta de destino
             $table->decimal('amount', 11, 2); // Valor da transação
             $table->enum('type', ['deposit', 'transfer']); // Tipo da transação (depósito ou transferência)
+            $table->enum('status', ['pending', 'approved', 'canceled']);
             $table->timestamps();
         });
     }
@@ -28,7 +29,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('transactions', function (Blueprint $table) {
-            $table->dropForeign(['origin_account_id']);
+            // $table->dropForeign(['origin_account_id']);
             $table->dropForeign(['destination_account_id']);
             $table->dropForeign(['account_id']);
         });

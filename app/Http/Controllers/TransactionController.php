@@ -3,8 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Transaction;
+use App\Models\Account;
+use App\Models\User;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class TransactionController extends Controller
 {
@@ -33,11 +36,40 @@ class TransactionController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Cria registro do depósito e exibi página para confirmação
      */
-    public function store(Request $request)
+    public function storeTransaction(Request $request)
     {
-        //
+
+        //Validações aqui
+   
+
+        //Recupera id da conta destino
+        $destinationUser = User::where('cpf', $request->userIdentifier)->first();
+        $destinationUserAccount = $destinationUser->account;
+
+        //Prepara a quantia para inserção no banco
+        $amount = str_replace(".", "", $request->amount);
+        $amount = str_replace(",", ".", $amount);
+        $amount = (float) $amount;
+
+        //Cria registro da transação
+        $transaction = Transaction::create([
+            'account_id' => Auth::user()->account->id,
+            'destination_account_id' => $destinationUserAccount->id,
+            'destination_account_id' => $destinationUserAccount->id,
+            'amount' => $amount,
+            'type' => 'transfer',
+            'status' => 'pending'
+        ]);
+
+        $transactionData = [
+            'destinatario' => $destinationUser->name,
+            'cpf' => $destinationUser->cpf,
+            'amount' => number_format($transaction->amount, 2, ',', '.')
+        ];
+
+        return view('transaction.confirmation', $transactionData);
     }
 
     /**

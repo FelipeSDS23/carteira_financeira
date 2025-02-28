@@ -22,12 +22,12 @@
 
                     <div class="container">
                         <div class="card p-4 bg-dark">
-                            <form class="bg-dark text-white">
+                            <form action="{{ route('transaction.deposit') }}" method="POST" class="bg-dark text-white">
                                 @csrf
 
                                 <div class="mb-3">
                                     <label for="transferType" class="form-label">Transferir por:</label>
-                                    <select class="form-select" id="transferType" required>
+                                    <select class="form-select" id="transferType" name="identification" required>
                                         <option value="cpf">CPF</option>
                                         <option value="email">E-mail</option>
                                     </select>
@@ -35,7 +35,7 @@
 
                                 <div class="mb-3" x-data>
                                     <label for="destinationAccount" class="form-label">Destinatário:</label>
-                                    <input type="text" class="form-control" id="destinationAccount"
+                                    <input type="text" class="form-control" id="destinationAccount" name="userIdentifier"
                                         placeholder="Informe o CPF do destinatário" required x-mask="999.999.999-99">
                                 </div>
 
@@ -46,7 +46,7 @@
                                     }
                                 }">
                                     <label for="valor" class="form-label">Valor a Transferir:</label>
-                                    <input type="text" class="form-control" id="valor" x-model="valor"
+                                    <input type="text" class="form-control" id="valor" x-model="valor" name="amount"
                                         x-on:input="formatValor" placeholder="Informe o valor a ser transferido"
                                         required>
                                 </div>

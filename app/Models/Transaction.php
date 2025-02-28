@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Transaction extends Model
 {
     
-    protected $fillable = ['user_id', 'balance', 'credit_limit'];
+    protected $fillable = ['account_id', 'destination_account_id', 'amount', 'type', 'status'];
 
     /**
      * Implementa relação 1 para muitos com a model Accounts.
