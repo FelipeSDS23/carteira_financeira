@@ -6,13 +6,13 @@
     </x-slot>
 
     <div class="py-3">
-        <div class="container px-4">
+        <div class="container px-2">
             <div class="dark:bg-dark shadow-sm rounded text-warning">
 
-                <div class="card shadow-lg p-4 bg-dark">
+                <div class="card shadow-lg p-0 bg-dark">
 
                     <!-- Tabela de Transferências Feitas -->
-                    <h3 class="mt-4 text-white">Transferências Realizadas</h3>
+                    <h3 class="mt-4 text-white px-2">Transferências Realizadas</h3>
                     <div class="table-responsive">
                         <table class="table table-bordered">
                             <thead class="text-white">
@@ -50,7 +50,7 @@
 
 
                     <!-- Tabela de Transferências Recebidas -->
-                    <h3 class="mt-4 text-white">Transferências Recebidas</h3>
+                    <h3 class="mt-4 text-white px-2">Transferências Recebidas</h3>
                     <div class="table-responsive">
                         <table class="table table-bordered">
                             <thead class="text-white">

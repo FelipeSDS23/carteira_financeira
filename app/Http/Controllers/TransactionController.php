@@ -28,7 +28,7 @@ class TransactionController extends Controller
 
         //Formata a exibição dos valores para o formato de moeda (Real)
         $account['balance'] = number_format($account['balance'], 2, ',', '.');
-        $account['credit_limit'] = number_format($account['credit_limit'], 2, ',', '.');
+        // $account['credit_limit'] = number_format($account['credit_limit'], 2, ',', '.');
 
         return view('transaction.transfer', compact('account'));
     }
@@ -42,7 +42,7 @@ class TransactionController extends Controller
 
         //Formata a exibição dos valores para o formato de moeda (Real)
         $account['balance'] = number_format($account['balance'], 2, ',', '.');
-        $account['credit_limit'] = number_format($account['credit_limit'], 2, ',', '.');
+        // $account['credit_limit'] = number_format($account['credit_limit'], 2, ',', '.');
 
         return view('transaction.deposit', compact('account'));
     }
@@ -124,6 +124,11 @@ class TransactionController extends Controller
         $amount = str_replace(",", ".", $amount);
         $amount = (float) $amount;
 
+        //Verifica se o usuário tem saldo suficiente para a transação
+        if($amount > $originUserAccount->balance) {
+            return redirect()->route('account.dashboard');
+        }
+
         //Realiza a transferência
         $originUserAccount->update([
             'balance' => $originUserAccount->balance - $amount
@@ -178,11 +183,12 @@ class TransactionController extends Controller
 
         //Recupera conta origem e conta destino da transação
         $originAccount = Auth::user()->account;
-
+        
         //Realiza a reversão de depósito
         if($transaction->type == 'deposit') {
             $originAccount->update([
-                'balance' => $originAccount->balance - $transaction->amount
+                'balance' => $originAccount->balance - $transaction->amount,
+                'available_for_withdrawal' => $originAccount->available_for_withdrawal + $transaction->amount
             ]);
 
             $transaction->update([

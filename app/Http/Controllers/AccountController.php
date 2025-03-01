@@ -19,7 +19,7 @@ class AccountController extends Controller
 
         //Formata a exibição dos valores para o formato de moeda (Real)
         $userAccount['balance'] = number_format($userAccount['balance'], 2, ',', '.');
-        $userAccount['credit_limit'] = number_format($userAccount['credit_limit'], 2, ',', '.');
+        // $userAccount['credit_limit'] = number_format($userAccount['credit_limit'], 2, ',', '.');
         
         return view('account.dashboard', compact('userAccount'));
     }

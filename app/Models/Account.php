@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Account extends Model
 {
-    protected $fillable = ['user_id', 'balance', 'credit_limit'];
+    protected $fillable = ['user_id', 'balance', 'available_for_withdrawal'];
 
     /**
      * Implementa relação 1 para 1 com a model User.
