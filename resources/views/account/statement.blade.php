@@ -12,7 +12,7 @@
                 <div class="card shadow-lg p-4 bg-dark">
 
                     <!-- Tabela de Transferências Feitas -->
-                    <h3 class="mt-4 text-white">Transferências Feitas</h3>
+                    <h3 class="mt-4 text-white">Transferências Realizadas</h3>
                     <div class="table-responsive">
                         <table class="table table-bordered">
                             <thead class="text-white">

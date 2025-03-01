@@ -11,13 +11,13 @@ use Illuminate\Support\Facades\Auth;
 class AccountController extends Controller
 {
     /**
-     * Exibe o extrato da conta
+     * Exibe a página inical (Minha área) da conta, contendo os detalhes da conta
      */
     public function dashboard()
     {
         $userAccount = Auth::user()->account;
 
-        //Formata a exibição dos valores monetários
+        //Formata a exibição dos valores para o formato de moeda (Real)
         $userAccount['balance'] = number_format($userAccount['balance'], 2, ',', '.');
         $userAccount['credit_limit'] = number_format($userAccount['credit_limit'], 2, ',', '.');
         
@@ -34,10 +34,8 @@ class AccountController extends Controller
 
         //Recupera todas as transferências feitas pelo usuário autenticado
         $transfersMade = Transaction::where('account_id', $userAccount->id)->get();
-        //Recupera todas as transferências recebidas pelo usuário autenticado
+        //Recupera todas as transferências realizadas para a conta do usuário autenticado
         $transfersReceived = Transaction::where('destination_account_id', $userAccount->id)->get();
-
-        // dd($transfersReceived[0]);
 
         return view('account.statement', compact('transfersMade', 'transfersReceived'));
     }

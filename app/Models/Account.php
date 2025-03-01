@@ -26,12 +26,4 @@ class Account extends Model
         return $this->hasMany(Transaction::class);
     }
 
-    /**
-     * Define a relação de accounts->id com transactions->destination_account_id
-     *
-     */
-    // public function destinationAccount()
-    // {
-    //     return $this->hasMany(Transaction::class, 'destination_account_id');
-    // }
 }

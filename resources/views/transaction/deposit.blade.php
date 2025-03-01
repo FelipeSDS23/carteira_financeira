@@ -22,7 +22,7 @@
 
                 <div class="container">
                     <div class="card p-4 bg-dark">
-                        <form action="{{ route('transaction.store') }}" method="POST" class="bg-dark text-white">
+                        <form action="{{ route('transaction.deposit') }}" method="POST" class="bg-dark text-white">
                             @csrf
 
                             <div class="mb-3" x-data="{

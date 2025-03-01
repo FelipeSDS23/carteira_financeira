@@ -49,44 +49,44 @@ class User extends Authenticatable implements MustVerifyEmail
     }
 
     /**
-     * Está função verifica se o cpf é valido.
-     *
-     * @return bool
-     */
-    public static function isValidCpf($cpf): bool
-     {
-         // Remove caracteres não numéricos
-         $cpf = preg_replace('/[^0-9]/', '', $cpf);
-         
-         // Verifica se o CPF tem 11 dígitos
-         if (strlen($cpf) != 11) {
-             return false;
-         }
-     
-         // Verifica se todos os dígitos são iguais
-         if (preg_match('/^(\d)\1{10}$/', $cpf)) {
-             return false;
-         }
-     
-         // Validação do primeiro dígito verificador
-         for ($t = 9; $t < 11; $t++) {
-             for ($d = 0, $c = 0; $c < $t; $c++) {
-                 $d += $cpf[$c] * (($t + 1) - $c);
-             }
-             $d = ((10 * $d) % 11) % 10;
-             if ($cpf[$c] != $d) {
-                 return false;
-             }
-         }
-     
-         return true;
-     }
-
-    /**
      * Implementa relação 1 para 1 com a model Accounts.
      */
      public function account()
     {
         return $this->hasOne(Account::class);
+    }
+
+    /**
+     * Está função verifica se o cpf é valido.
+     *
+     * @return bool
+     */
+    public static function isValidCpf($cpf): bool
+    {
+        // Remove caracteres não numéricos
+        $cpf = preg_replace('/[^0-9]/', '', $cpf);
+        
+        // Verifica se o CPF tem 11 dígitos
+        if (strlen($cpf) != 11) {
+            return false;
+        }
+    
+        // Verifica se todos os dígitos são iguais
+        if (preg_match('/^(\d)\1{10}$/', $cpf)) {
+            return false;
+        }
+    
+        // Validação do primeiro dígito verificador
+        for ($t = 9; $t < 11; $t++) {
+            for ($d = 0, $c = 0; $c < $t; $c++) {
+                $d += $cpf[$c] * (($t + 1) - $c);
+            }
+            $d = ((10 * $d) % 11) % 10;
+            if ($cpf[$c] != $d) {
+                return false;
+            }
+        }
+    
+        return true;
     }
 }

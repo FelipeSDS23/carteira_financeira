@@ -7,11 +7,9 @@ use App\Http\Controllers\AccountController;
 
 Route::get('/', function () {
     return view('auth.login');
-    // return view('welcome');
 });
 
 Route::get('/dashboard', function () {
-    // return view('dashboard');
     return redirect()->route('account.dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
@@ -22,15 +20,16 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::prefix('transaction')->middleware('auth')->group(function () {
-    Route::get('/transfer', [TransactionController::class, 'transfer'])->name('transaction.transfer');
-    Route::get('/deposit', [TransactionController::class, 'deposit'])->name('transaction.deposit');
-    Route::post('/deposit', [TransactionController::class, 'storeTransaction'])->name('transaction.store');
-    Route::post('/reverse', [TransactionController::class, 'reverseTransaction'])->name('transaction.reverse');
+    Route::get('/transfer', [TransactionController::class, 'transfer'])->name('transaction.transfer'); //Mostra página que realiza transferências
+    Route::get('/deposit', [TransactionController::class, 'deposit'])->name('transaction.deposit'); //Mostra página que realiza depósitos
+    Route::post('/transfer', [TransactionController::class, 'storeTransfer'])->name('transaction.transfer'); //Realiza a transferência de saldo
+    Route::post('/deposit', [TransactionController::class, 'storeDeposit'])->name('transaction.deposit'); //Realiza o depósito de saldo
+    Route::post('/reverse', [TransactionController::class, 'reverseTransaction'])->name('transaction.reverse'); //Reverte uma transação
 });
 
 Route::prefix('account')->middleware('auth')->group(function () {
-    Route::get('/dashboard', [AccountController::class, 'dashboard'])->name('account.dashboard');
-    Route::get('/statement', [AccountController::class, 'statement'])->name('account.statement');
+    Route::get('/dashboard', [AccountController::class, 'dashboard'])->name('account.dashboard'); //Mostra página inicial da conta
+    Route::get('/statement', [AccountController::class, 'statement'])->name('account.statement'); //Mostra página com o extrato da conta
 });
 
 require __DIR__.'/auth.php';

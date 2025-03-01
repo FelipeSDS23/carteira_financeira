@@ -26,10 +26,9 @@ class TransactionController extends Controller
     {
         $account = Auth::user()->account;
 
+        //Formata a exibição dos valores para o formato de moeda (Real)
         $account['balance'] = number_format($account['balance'], 2, ',', '.');
         $account['credit_limit'] = number_format($account['credit_limit'], 2, ',', '.');
-
-        // dd($account);
 
         return view('transaction.transfer', compact('account'));
     }
@@ -41,6 +40,7 @@ class TransactionController extends Controller
     {
         $account = Auth::user()->account;
 
+        //Formata a exibição dos valores para o formato de moeda (Real)
         $account['balance'] = number_format($account['balance'], 2, ',', '.');
         $account['credit_limit'] = number_format($account['credit_limit'], 2, ',', '.');
 
@@ -48,44 +48,74 @@ class TransactionController extends Controller
     }
 
     /**
-     * Cria registro do depósito e exibi página para confirmação
+     * Realiza e registra o depósito
      */
-    public function storeTransaction(Request $request)
+    public function storeDeposit(Request $request)
     {
-
-        //Validações aqui
-   
-
-        //Recupera usuário associado a conta destino
-        $destinationUser = User::where('cpf', $request->userIdentifier)->first();
-        //Recupera conta destino
-        $destinationUserAccount = $destinationUser->account;
-
-        //Recupera conta do usuário de origem
-        $originUserAccount = Auth::user()->account;
-
-
-
+        $userAccount = Auth::user()->account;
 
         //Prepara a quantia para inserção no banco
         $amount = str_replace(".", "", $request->amount);
         $amount = str_replace(",", ".", $amount);
         $amount = (float) $amount;
 
+        //Realiza depósito
+        $userAccount->update([
+            'balance' => $userAccount->balance + $amount
+        ]);
 
+        //Dados da transação
+        $transactionData = [
+            'account_id' => Auth::user()->account->id,
+            'origin_account_user_name' => 'Depósito',
+            'origin_account_user_cpf' => Auth::user()->cpf,
+            'destination_account_id' => Auth::user()->account->id,
+            'destination_account_user_name' => Auth::user()->name,
+            'destination_account_user_cpf' => Auth::user()->cpf,
+            'amount' => $amount,
+            'type' => 'deposit',
+            'status' => 'approved'
+        ];
+
+        //Cria registro da transação
+        $transaction = Transaction::create($transactionData);
+
+        return redirect()->route('account.dashboard');
+    }
+
+    /**
+     * Realiza e registra a transferência
+     */
+    public function storeTransfer(Request $request)
+    {
+        //Validações aqui
+   
+        //Recupera usuário associado a conta destino de acordo com o identificador (cpf ou email)
+        if( $request->identification == "cpf") {
+            $destinationUser = User::where('cpf', $request->userIdentifier)->first();
+        }
+        if( $request->identification == "email") {
+            $destinationUser = User::where('email', $request->userIdentifier)->first();
+        }
+        
+        //Recupera conta destino
+        $destinationUserAccount = $destinationUser->account;
+
+        //Recupera conta do usuário de origem
+        $originUserAccount = Auth::user()->account;
+
+        //Prepara a quantia para inserção no banco
+        $amount = str_replace(".", "", $request->amount);
+        $amount = str_replace(",", ".", $amount);
+        $amount = (float) $amount;
 
         //Realiza a transferência
-
-        //Remove valor da conta origem
         $originUserAccount->update([
             'balance' => $originUserAccount->balance - $amount
         ]);
-
-        //Adiciona valor da conta destino
         $destinationUserAccount->update([
             'balance' => $destinationUserAccount->balance + $amount
         ]);
-
 
         //Dados da transação
         $transactionData = [
@@ -103,10 +133,7 @@ class TransactionController extends Controller
         //Cria registro da transação
         $transaction = Transaction::create($transactionData);
 
-        $transaction['amount'] = number_format($transaction['amount'], 2, ',', '.');
-
         return redirect()->route('account.dashboard');
-
     }
 
     /**
