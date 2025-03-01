@@ -54,6 +54,11 @@ class TransactionController extends Controller
     {
         $userAccount = Auth::user()->account;
 
+        // //Verifica se o usuário autenticado possui uma conta
+        // if(!$userAccount) {
+        //     return redirect()->route('account.dashboard');
+        // }
+
         //Prepara a quantia para inserção no banco
         $amount = str_replace(".", "", $request->amount);
         $amount = str_replace(",", ".", $amount);
@@ -97,14 +102,24 @@ class TransactionController extends Controller
         if( $request->identification == "email") {
             $destinationUser = User::where('email', $request->userIdentifier)->first();
         }
-        
+
+        //Valida se o usúario destino existe
+        if(!$destinationUser) {
+            return redirect()->route('account.dashboard');
+        }
+
         //Recupera conta destino
         $destinationUserAccount = $destinationUser->account;
+
+        //Valida se a conta destino existe
+        if(!$destinationUserAccount) {
+            return redirect()->route('account.dashboard');
+        }
 
         //Recupera conta do usuário de origem
         $originUserAccount = Auth::user()->account;
 
-        //Prepara a quantia para inserção no banco
+        //Prepara a quantia para realizar calculo e para inserção no banco
         $amount = str_replace(".", "", $request->amount);
         $amount = str_replace(",", ".", $amount);
         $amount = (float) $amount;
@@ -127,7 +142,7 @@ class TransactionController extends Controller
             'destination_account_user_cpf' => $destinationUser->cpf,
             'amount' => $amount,
             'type' => 'transfer',
-            'status' => 'pending'
+            'status' => 'approved'
         ];
 
         //Cria registro da transação
@@ -141,9 +156,60 @@ class TransactionController extends Controller
      */
     public function reverseTransaction(Request $request)
     {
-        dd($request);
+        //Validações
 
-        //reverter somente transações com status completo
+        //Recupera a transação
+        $transaction = Transaction::find($request->transactionId);
+
+        //Verifica se a transação existe
+        if(!$transaction) {
+            return redirect()->route('account.dashboard');
+        }
+
+        //Verifica se a transação a ser revertida foi realizada pelo usuário que está autenticado
+        if($transaction->origin_account_user_cpf != Auth::user()->cpf) {
+            return redirect()->route('account.dashboard');
+        }
+
+        //Verifica se a transação já está revertida
+        if($transaction->status != 'approved') {
+            return redirect()->route('account.dashboard');
+        }
+
+        //Recupera conta origem e conta destino da transação
+        $originAccount = Auth::user()->account;
+
+        //Realiza a reversão de depósito
+        if($transaction->type == 'deposit') {
+            $originAccount->update([
+                'balance' => $originAccount->balance - $transaction->amount
+            ]);
+
+            $transaction->update([
+                'status' => 'canceled'
+            ]);
+
+            return redirect()->route('account.dashboard');
+        }
+
+        //Realiza a reversão de transferência
+        $destinationAccount = Account::find($transaction->destination_account_id);
+        if($transaction->type == 'transfer') {
+            $destinationAccount->update([
+                'balance' => $destinationAccount->balance - $transaction->amount
+            ]);
+
+            $originAccount->update([
+                'balance' => $originAccount->balance + $transaction->amount
+            ]);
+
+            $transaction->update([
+                'status' => 'canceled'
+            ]);
+
+            return redirect()->route('account.dashboard');
+        }
+
     }
 
     /**
