@@ -42,7 +42,7 @@ class TransactionController extends Controller
     /**
      * Realiza e registra o depósito
      */
-    public function storeDeposit(Request $request)
+    public function makeDeposit(Request $request)
     {
         
         //Validação do input do formulário
@@ -95,7 +95,7 @@ class TransactionController extends Controller
     /**
      * Realiza e registra a transferência
      */
-    public function storeTransfer(Request $request)
+    public function makeTransfer(Request $request)
     {
         //Validação dos inputs do formulário
         $request->merge(['amount' => $this->convertToDatabaseValue($request->amount)]); //Converte o valor do campo amount antes de validá-lo, convertendo-o do formato brasileiro (100,00) para o formato internacional (100.00).

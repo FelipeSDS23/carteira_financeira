@@ -22,8 +22,8 @@ Route::middleware('auth')->group(function () {
 Route::prefix('transaction')->middleware('auth')->group(function () {
     Route::get('/transfer', [TransactionController::class, 'transfer'])->name('transaction.transfer'); //Mostra página que realiza transferências
     Route::get('/deposit', [TransactionController::class, 'deposit'])->name('transaction.deposit'); //Mostra página que realiza depósitos
-    Route::post('/transfer', [TransactionController::class, 'storeTransfer'])->name('transaction.transfer'); //Realiza a transferência de saldo
-    Route::post('/deposit', [TransactionController::class, 'storeDeposit'])->name('transaction.deposit'); //Realiza o depósito de saldo
+    Route::post('/transfer', [TransactionController::class, 'makeTransfer'])->name('transaction.transfer'); //Realiza a transferência de saldo
+    Route::post('/deposit', [TransactionController::class, 'makeDeposit'])->name('transaction.deposit'); //Realiza o depósito de saldo
     Route::post('/reverse', [TransactionController::class, 'reverseTransaction'])->name('transaction.reverse'); //Reverte uma transação
 });
 
