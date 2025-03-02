@@ -15,10 +15,13 @@
                     <div class="text-warning">
                         Saldo atual: R$ {{ $account->balance }}
                     </div>
-                    <div class="text-warning ml-3">
-                        Limite atual: R$ {{ $account->credit_limit }}
-                    </div>
                 </div>
+
+                @if (session('error'))
+                    <div class="alert alert-danger text-center">
+                        {{ session('error') }}
+                    </div>
+                @endif
 
                 <div class="container">
                     <div class="card p-4 bg-dark">

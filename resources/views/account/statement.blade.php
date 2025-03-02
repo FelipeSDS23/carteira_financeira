@@ -11,6 +11,7 @@
 
                 <div class="card shadow-lg p-0 bg-dark">
 
+                    <!-- Erros dos inputs -->
                     <div class="text-red-500 mt-1">
                         <ul>
                             @foreach ($errors->get('transactionId') as $message)
@@ -18,6 +19,13 @@
                             @endforeach
                         </ul>
                     </div>
+
+                    <!-- Erros de validação -->
+                    @if (session('error'))
+                        <div class="alert alert-danger text-center">
+                            {{ session('error') }}
+                        </div>
+                    @endif
 
                     <!-- Tabela de Transferências Feitas -->
                     <h3 class="mt-4 text-white px-2">Transferências Realizadas</h3>

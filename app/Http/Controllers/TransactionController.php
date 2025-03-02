@@ -9,17 +9,10 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Rules\CpfValidation;
+use Illuminate\Support\Facades\DB;
 
 class TransactionController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-        //
-    }
-
     /**
      * Exibe a página com o formulário de transfência
      */
@@ -29,7 +22,6 @@ class TransactionController extends Controller
 
         //Formata a exibição dos valores para o formato de moeda (Real)
         $account['balance'] = number_format($account['balance'], 2, ',', '.');
-        // $account['credit_limit'] = number_format($account['credit_limit'], 2, ',', '.');
 
         return view('transaction.transfer', compact('account'));
     }
@@ -43,7 +35,6 @@ class TransactionController extends Controller
 
         //Formata a exibição dos valores para o formato de moeda (Real)
         $account['balance'] = number_format($account['balance'], 2, ',', '.');
-        // $account['credit_limit'] = number_format($account['credit_limit'], 2, ',', '.');
 
         return view('transaction.deposit', compact('account'));
     }
@@ -53,50 +44,52 @@ class TransactionController extends Controller
      */
     public function storeDeposit(Request $request)
     {
+        
         //Validação do input do formulário
-        $request->merge(['amount' => str_replace(',', '.', str_replace('.', '', $request->amount))]); //Converte o valor do campo amount antes de validá-lo, convertendo-o do formato brasileiro (100,00) para o formato internacional (100.00).
+        $request->merge(['amount' => $this->convertToDatabaseValue($request->amount)]); //Converte o valor do campo amount antes de validá-lo, convertendo-o do formato brasileiro (100,00) para o formato internacional (100.00).
         $rules = ['amount' => 'required|numeric'];
         $feedback = [
             'amount.required' => 'O campo valor é obrigatório.',
             'amount.numeric' => 'Valor inválido. Tente novamente.'
         ];
         $request->validate($rules, $feedback);
-        
 
-        $userAccount = Auth::user()->account;
-
-        // //Verifica se o usuário autenticado possui uma conta
-        // if(!$userAccount) {
-        //     return redirect()->route('account.dashboard');
-        // }
-
-        //Prepara a quantia para inserção no banco
-        // $amount = str_replace(".", "", $request->amount);
-        // $amount = str_replace(",", ".", $amount);
         $amount = (float) $request->amount;
 
-        //Realiza depósito
-        $userAccount->update([
-            'balance' => $userAccount->balance + $amount
-        ]);
+        // Inicia a transação
+        DB::beginTransaction();
 
-        //Dados da transação
-        $transactionData = [
-            'account_id' => Auth::user()->account->id,
-            'origin_account_user_name' => 'Depósito',
-            'origin_account_user_cpf' => Auth::user()->cpf,
-            'destination_account_id' => Auth::user()->account->id,
-            'destination_account_user_name' => Auth::user()->name,
-            'destination_account_user_cpf' => Auth::user()->cpf,
-            'amount' => $amount,
-            'type' => 'deposit',
-            'status' => 'approved'
-        ];
+        try {
+            //Cria o registro da transação
+            $transactionData = [
+                'account_id' => Auth::user()->account->id,
+                'origin_account_user_name' => 'Depósito',
+                'origin_account_user_cpf' => Auth::user()->cpf,
+                'destination_account_id' => Auth::user()->account->id,
+                'destination_account_user_name' => Auth::user()->name,
+                'destination_account_user_cpf' => Auth::user()->cpf,
+                'amount' => $amount,
+                'type' => 'deposit',
+                'status' => 'approved'
+            ];
+            $transaction = Transaction::create($transactionData);
 
-        //Cria registro da transação
-        $transaction = Transaction::create($transactionData);
+            //Realiza depósito
+            $userAccount = Auth::user()->account;
+            $userAccount->update([
+                'balance' => $userAccount->balance + $amount
+            ]);
 
-        return redirect()->route('account.dashboard');
+            // Confirma a transação
+            DB::commit();
+
+            return redirect()->route('account.dashboard')->with('success', 'O depósito foi realizada com sucesso!');
+        } catch (\Exception $e) {
+            // Reverte as mudanças em caso de erro
+            DB::rollBack();
+
+            return redirect()->route('transaction.deposit')->with('error', 'Ocorreu um erro. Tente novamente.');
+        }
     }
 
     /**
@@ -105,7 +98,7 @@ class TransactionController extends Controller
     public function storeTransfer(Request $request)
     {
         //Validação dos inputs do formulário
-        $request->merge(['amount' => str_replace(',', '.', str_replace('.', '', $request->amount))]); //Converte o valor do campo amount antes de validá-lo, convertendo-o do formato brasileiro (100,00) para o formato internacional (100.00).
+        $request->merge(['amount' => $this->convertToDatabaseValue($request->amount)]); //Converte o valor do campo amount antes de validá-lo, convertendo-o do formato brasileiro (100,00) para o formato internacional (100.00).
         $rules = [
             'amount' => 'required|numeric',
             'identification' => 'required|in:cpf,email',
@@ -121,68 +114,68 @@ class TransactionController extends Controller
             'amount.numeric' => 'Valor inválido. Tente novamente.',
             'userIdentifier.required' => 'O campo CPF/E-mail é obrigatório.',
         ];
-
         $request->validate($rules, $feedback);
-   
+
         //Recupera usuário associado a conta destino de acordo com o identificador (cpf ou email)
-        if( $request->identification == "cpf") {
+        if ($request->identification == 'cpf') {
             $destinationUser = User::where('cpf', $request->userIdentifier)->first();
-        }
-        if( $request->identification == "email") {
+        } elseif ($request->identification == 'email') {
             $destinationUser = User::where('email', $request->userIdentifier)->first();
         }
-
-        //Valida se o usúario destino existe
-        if(!$destinationUser) {
-            return redirect()->route('account.dashboard');
+    
+        //Valida se a conta destino e usúario destino existem
+        if (!$destinationUser || !$destinationUser->account) {
+            return redirect()->route('transaction.transfer')->with('error', 'Conta destino não encontrada!');
         }
 
         //Recupera conta destino
         $destinationUserAccount = $destinationUser->account;
-
-        //Valida se a conta destino existe
-        if(!$destinationUserAccount) {
-            return redirect()->route('account.dashboard');
-        }
-
         //Recupera conta do usuário de origem
         $originUserAccount = Auth::user()->account;
 
-        //Prepara a quantia para realizar calculo e para inserção no banco
-        // $amount = str_replace(".", "", $request->amount);
-        // $amount = str_replace(",", ".", $amount);
-        $amount = (float) $request->amount;
-
         //Verifica se o usuário tem saldo suficiente para a transação
+        $amount = (float) $request->amount;
         if($amount > $originUserAccount->balance) {
-            return redirect()->route('account.dashboard');
+            return redirect()->route('transaction.transfer')->with('error', 'Saldo insuficiente!');
         }
 
-        //Realiza a transferência
-        $originUserAccount->update([
-            'balance' => $originUserAccount->balance - $amount
-        ]);
-        $destinationUserAccount->update([
-            'balance' => $destinationUserAccount->balance + $amount
-        ]);
+        // Inicia a transação
+        DB::beginTransaction();
 
-        //Dados da transação
-        $transactionData = [
-            'account_id' => Auth::user()->account->id,
-            'origin_account_user_name' => Auth::user()->name,
-            'origin_account_user_cpf' => Auth::user()->cpf,
-            'destination_account_id' => $destinationUserAccount->id,
-            'destination_account_user_name' => $destinationUser->name,
-            'destination_account_user_cpf' => $destinationUser->cpf,
-            'amount' => $amount,
-            'type' => 'transfer',
-            'status' => 'approved'
-        ];
+        try {
+            //Dados da transação
+            $transactionData = [
+                'account_id' => Auth::user()->account->id,
+                'origin_account_user_name' => Auth::user()->name,
+                'origin_account_user_cpf' => Auth::user()->cpf,
+                'destination_account_id' => $destinationUserAccount->id,
+                'destination_account_user_name' => $destinationUser->name,
+                'destination_account_user_cpf' => $destinationUser->cpf,
+                'amount' => $amount,
+                'type' => 'transfer',
+                'status' => 'approved'
+            ];
+            //Cria registro da transação
+            $transaction = Transaction::create($transactionData);
 
-        //Cria registro da transação
-        $transaction = Transaction::create($transactionData);
+            //Realiza a transferência
+            $originUserAccount->update([
+                'balance' => $originUserAccount->balance - $amount
+            ]);
+            $destinationUserAccount->update([
+                'balance' => $destinationUserAccount->balance + $amount
+            ]);
 
-        return redirect()->route('account.dashboard');
+            // Confirma a transação (commits todas as mudanças)
+            DB::commit();
+
+            return redirect()->route('account.dashboard')->with('success', 'Sua transferência foi realizada com sucesso!');
+        } catch (\Exception $e) {
+            // Se algo der errado, reverte as mudanças feitas até aqui
+            DB::rollBack();
+
+            return redirect()->route('transaction.transfer')->with('error', 'Ocorreu um erro. Tente novamente.');
+        }
     }
 
     /**
@@ -205,23 +198,22 @@ class TransactionController extends Controller
 
         //Verifica se a transação existe
         if(!$transaction) {
-            return redirect()->route('account.dashboard');
+            return redirect()->route('account.statement')->with('error', 'Transação inexistente!');
         }
 
         //Verifica se a transação a ser revertida foi realizada pelo usuário que está autenticado
         if($transaction->origin_account_user_cpf != Auth::user()->cpf) {
-            return redirect()->route('account.dashboard');
+            return redirect()->route('account.statement')->with('error', 'Transação não encontrada!');
         }
 
         //Verifica se a transação já está revertida
         if($transaction->status != 'approved') {
-            return redirect()->route('account.dashboard');
+            return redirect()->route('account.statement')->with('error', 'Transação já revertida!');
         }
 
         //Recupera conta origem e conta destino da transação
         $originAccount = Auth::user()->account;
-        
-        //Realiza a reversão de depósito
+
         if($transaction->type == 'deposit') {
             $originAccount->update([
                 'balance' => $originAccount->balance - $transaction->amount,
@@ -232,7 +224,7 @@ class TransactionController extends Controller
                 'status' => 'canceled'
             ]);
 
-            return redirect()->route('account.dashboard');
+            return redirect()->route('account.dashboard')->with('success', 'Depósito revertido com sucesso!');
         }
 
         //Realiza a reversão de transferência
@@ -250,40 +242,16 @@ class TransactionController extends Controller
                 'status' => 'canceled'
             ]);
 
-            return redirect()->route('account.dashboard');
+            return redirect()->route('account.dashboard')->with('success', 'Transferência revertida com sucesso!');
         }
-
+        
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Transaction $transaction)
+
+    private function convertToDatabaseValue($value)
     {
-        //
+        return str_replace(',', '.', str_replace('.', '', $value));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Transaction $transaction)
-    {
-        //
-    }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Transaction $transaction)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Transaction $transaction)
-    {
-        //
-    }
 }

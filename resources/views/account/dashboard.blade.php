@@ -13,6 +13,11 @@
                     <p class="text-white">Olá {{ explode(' ', Auth::user()->name)[0] }}!</p>
                 </div>
 
+                @if (session('success'))
+                    <div class="alert alert-success text-center">
+                        {{ session('success') }}
+                    </div>
+                @endif
 
                 <div class="card shadow-lg p-4 bg-dark">
                     <div class="mb-3">
