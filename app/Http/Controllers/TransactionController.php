@@ -44,7 +44,6 @@ class TransactionController extends Controller
      */
     public function makeDeposit(Request $request)
     {
-        
         //Validação do input do formulário
         $request->merge(['amount' => $this->convertToDatabaseValue($request->amount)]); //Converte o valor do campo amount antes de validá-lo, convertendo-o do formato brasileiro (100,00) para o formato internacional (100.00).
         $rules = ['amount' => 'required|numeric'];
