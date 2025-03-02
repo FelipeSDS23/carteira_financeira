@@ -31,12 +31,22 @@
                                         <option value="cpf">CPF</option>
                                         <option value="email">E-mail</option>
                                     </select>
+                                    @error('identification')
+                                        <div class="text-danger">
+                                            {{ $message }}
+                                        </div>
+                                    @enderror
                                 </div>
 
                                 <div class="mb-3" x-data>
                                     <label for="destinationAccount" class="form-label">Destinatário:</label>
                                     <input type="text" class="form-control" id="destinationAccount" name="userIdentifier"
                                         placeholder="Informe o CPF do destinatário" required x-mask="999.999.999-99">
+                                    @error('userIdentifier')
+                                        <div class="text-danger">
+                                            {{ $message }}
+                                        </div>
+                                    @enderror
                                 </div>
 
                                 <div class="mb-3" x-data="{
@@ -49,6 +59,11 @@
                                     <input type="text" class="form-control" id="valor" x-model="valor" name="amount"
                                         x-on:input="formatValor" placeholder="Informe o valor a ser transferido"
                                         required>
+                                    @error('amount')
+                                        <div class="text-danger">
+                                            {{ $message }}
+                                        </div>
+                                    @enderror
                                 </div>
 
                                 <button type="submit" class="btn btn-primary">Transferir</button>

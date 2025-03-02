@@ -52,6 +52,16 @@ class TransactionController extends Controller
      */
     public function storeDeposit(Request $request)
     {
+        //Validação do input do formulário
+        $request->merge(['amount' => str_replace(',', '.', str_replace('.', '', $request->amount))]); //Converte o valor do campo amount antes de validá-lo, convertendo-o do formato brasileiro (100,00) para o formato internacional (100.00).
+        $rules = ['amount' => 'required|numeric'];
+        $feedback = [
+            'amount.required' => 'O campo valor é obrigatório.',
+            'amount.numeric' => 'Valor inválido. Tente novamente.'
+        ];
+        $request->validate($rules, $feedback);
+        
+
         $userAccount = Auth::user()->account;
 
         // //Verifica se o usuário autenticado possui uma conta
@@ -60,9 +70,9 @@ class TransactionController extends Controller
         // }
 
         //Prepara a quantia para inserção no banco
-        $amount = str_replace(".", "", $request->amount);
-        $amount = str_replace(",", ".", $amount);
-        $amount = (float) $amount;
+        // $amount = str_replace(".", "", $request->amount);
+        // $amount = str_replace(",", ".", $amount);
+        $amount = (float) $request->amount;
 
         //Realiza depósito
         $userAccount->update([
@@ -93,7 +103,26 @@ class TransactionController extends Controller
      */
     public function storeTransfer(Request $request)
     {
-        //Validações aqui
+        //Validação dos inputs do formulário
+        $request->merge(['amount' => str_replace(',', '.', str_replace('.', '', $request->amount))]); //Converte o valor do campo amount antes de validá-lo, convertendo-o do formato brasileiro (100,00) para o formato internacional (100.00).
+        $rules = [
+            'amount' => 'required|numeric',
+            'identification' => 'required|in:cpf,email',
+        ];
+        if($request->identification == 'cpf') {
+            $rules['userIdentifier'] = 'required'|User::isValidCpf($request->userIdentifier);
+        }
+        if($request->identification == 'email') {
+            $rules['userIdentifier'] = 'required|email';
+        }
+        $feedback = [
+            'amount.required' => 'O campo valor é obrigatório.',
+            'amount.numeric' => 'Valor inválido. Tente novamente.'
+        ];
+        $request->validate($rules, $feedback);
+
+
+
    
         //Recupera usuário associado a conta destino de acordo com o identificador (cpf ou email)
         if( $request->identification == "cpf") {

@@ -35,6 +35,11 @@
                                 <input type="text" class="form-control" id="valor" x-model="valor" name="amount"
                                     x-on:input="formatValor" placeholder="Informe o valor a ser depositado"
                                     required>
+                                @error('amount')
+                                    <div class="text-danger">
+                                        {{ $message }}
+                                    </div>
+                                @enderror
                             </div>
 
                             <button type="submit" class="btn btn-primary">Depositar</button>
