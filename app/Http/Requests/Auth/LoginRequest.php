@@ -8,7 +8,6 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
-// use Illuminate\Support\Facades\Crypt;  // !!!!REMOVIDO!!!! LOGIN COM CPF CRIPTOGRAFADO
 
 class LoginRequest extends FormRequest
 {
@@ -42,22 +41,6 @@ class LoginRequest extends FormRequest
     public function authenticate(): void
     {
         $this->ensureIsNotRateLimited();
-
-        // // ************TRECHO DE LOGIN COM CPF CRIPTOGRAFADO !!!!REMOVIDO!!!!****************
-        // // Criptografa o CPF fornecido para comparação
-        // $encryptedCpf = Crypt::encryptString($this->input('cpf'));
-
-        // // Busca o usuário pelo CPF criptografado
-        // $user = \App\Models\User::where('cpf', $encryptedCpf)->first();
-
-        // // Verifica se o usuário existe e se a senha está correta
-        // if (!$user || !Auth::attempt(['cpf' => $encryptedCpf, 'password' => $this->input('password')], $this->boolean('remember'))) {
-        //     RateLimiter::hit($this->throttleKey());
-
-        //     throw ValidationException::withMessages([
-        //         'cpf' => trans('auth.failed'),
-        //     ]);
-        // }
 
         if (! Auth::attempt($this->only('cpf', 'password'), $this->boolean('remember'))) {
             RateLimiter::hit($this->throttleKey());

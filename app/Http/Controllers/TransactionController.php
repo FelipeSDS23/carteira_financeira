@@ -246,7 +246,9 @@ class TransactionController extends Controller
         
     }
 
-
+    /**
+     *  Formata moeda para realizar operações matemáticas ou armazenar no banco de dados Ex: 100,00 para 100.00
+     */
     private function convertToDatabaseValue($value)
     {
         return str_replace(',', '.', str_replace('.', '', $value));

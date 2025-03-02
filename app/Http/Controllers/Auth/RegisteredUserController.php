@@ -57,7 +57,6 @@ class RegisteredUserController extends Controller
 
         Account::create([
             'user_id' => $user->id,
-            // 'credit_limit' => 5000
         ]);
 
         event(new Registered($user));
