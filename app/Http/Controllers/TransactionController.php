@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Rules\CpfValidation;
 
 class TransactionController extends Controller
 {
@@ -110,19 +111,18 @@ class TransactionController extends Controller
             'identification' => 'required|in:cpf,email',
         ];
         if($request->identification == 'cpf') {
-            $rules['userIdentifier'] = 'required'|User::isValidCpf($request->userIdentifier);
+            $rules['userIdentifier'] = ['required', new CpfValidation()];
         }
         if($request->identification == 'email') {
             $rules['userIdentifier'] = 'required|email';
         }
         $feedback = [
             'amount.required' => 'O campo valor é obrigatório.',
-            'amount.numeric' => 'Valor inválido. Tente novamente.'
+            'amount.numeric' => 'Valor inválido. Tente novamente.',
+            'userIdentifier.required' => 'O campo CPF/E-mail é obrigatório.',
         ];
+
         $request->validate($rules, $feedback);
-
-
-
    
         //Recupera usuário associado a conta destino de acordo com o identificador (cpf ou email)
         if( $request->identification == "cpf") {
@@ -149,9 +149,9 @@ class TransactionController extends Controller
         $originUserAccount = Auth::user()->account;
 
         //Prepara a quantia para realizar calculo e para inserção no banco
-        $amount = str_replace(".", "", $request->amount);
-        $amount = str_replace(",", ".", $amount);
-        $amount = (float) $amount;
+        // $amount = str_replace(".", "", $request->amount);
+        // $amount = str_replace(",", ".", $amount);
+        $amount = (float) $request->amount;
 
         //Verifica se o usuário tem saldo suficiente para a transação
         if($amount > $originUserAccount->balance) {
@@ -191,6 +191,14 @@ class TransactionController extends Controller
     public function reverseTransaction(Request $request)
     {
         //Validações
+        $rules = [
+            'transactionId' => 'required|exists:transactions,id', // Verifica se existe um ID na tabela 'transactions'
+        ];
+        $feedback = [
+            'transactionId.required' => 'O campo transactionId é obrigatório.',
+            'transactionId.exists' => 'O ID da transação não existe.',
+        ];
+        $request->validate($rules, $feedback);
 
         //Recupera a transação
         $transaction = Transaction::find($request->transactionId);

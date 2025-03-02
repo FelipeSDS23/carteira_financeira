@@ -11,6 +11,14 @@
 
                 <div class="card shadow-lg p-0 bg-dark">
 
+                    <div class="text-red-500 mt-1">
+                        <ul>
+                            @foreach ($errors->get('transactionId') as $message)
+                                <li>{{ $message }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+
                     <!-- Tabela de Transferências Feitas -->
                     <h3 class="mt-4 text-white px-2">Transferências Realizadas</h3>
                     <div class="table-responsive">
