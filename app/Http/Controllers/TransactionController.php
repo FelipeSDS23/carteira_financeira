@@ -210,9 +210,14 @@ class TransactionController extends Controller
             return redirect()->route('account.statement')->with('error', 'Transação já revertida!');
         }
 
-        //Recupera conta origem e conta destino da transação
         $originAccount = Auth::user()->account;
 
+        //Barra a reversão caso ela deixe a conta negativada
+        if($originAccount->balance < $transaction->amount) {
+            return redirect()->route('account.statement')->with('error', 'Saldo insuficiênte para reversão!');
+        }
+
+        //Realiza a reversão do depósito
         if($transaction->type == 'deposit') {
             $originAccount->update([
                 'balance' => $originAccount->balance - $transaction->amount,
@@ -226,8 +231,14 @@ class TransactionController extends Controller
             return redirect()->route('account.dashboard')->with('success', 'Depósito revertido com sucesso!');
         }
 
-        //Realiza a reversão de transferência
         $destinationAccount = Account::find($transaction->destination_account_id);
+
+        //Barra a reversão caso a conta destino nao tenha saldo suficiênte
+        if($destinationAccount->balance < $transaction->amount) {
+            return redirect()->route('account.statement')->with('error', 'Saldo insuficiênte da conta destino para reversão!');
+        }
+
+        //Realiza a reversão de transferência
         if($transaction->type == 'transfer') {
             $destinationAccount->update([
                 'balance' => $destinationAccount->balance - $transaction->amount
