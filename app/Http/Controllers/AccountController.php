@@ -19,7 +19,6 @@ class AccountController extends Controller
 
         //Formata a exibição dos valores para o formato de moeda (Real)
         $userAccount['balance'] = number_format($userAccount['balance'], 2, ',', '.');
-        // $userAccount['credit_limit'] = number_format($userAccount['credit_limit'], 2, ',', '.');
         
         return view('account.dashboard', compact('userAccount'));
     }
@@ -38,53 +37,5 @@ class AccountController extends Controller
         $transfersReceived = Transaction::where('destination_account_id', $userAccount->id)->get();
 
         return view('account.statement', compact('transfersMade', 'transfersReceived'));
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(Account $account)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Account $account)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Account $account)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Account $account)
-    {
-        //
     }
 }
