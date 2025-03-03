@@ -34,8 +34,10 @@ class AccountController extends Controller
         //Recupera todas as transferências realizadas pelo usuário autenticado
         $transfersMade = Transaction::where('account_id', $userAccount->id)->where('type', '!=', 'deposit')->get();
         //Recupera todas as transferências recebidas pelo usuário autenticado
-        $transfersReceived = Transaction::where('destination_account_id', $userAccount->id)->get();
+        $transfersReceived = Transaction::where('destination_account_id', $userAccount->id)->where('type', '!=', 'deposit')->get();
+        //Recupera todas os depósitos recebidas pelo usuário autenticado
+        $deposits = Transaction::where('destination_account_id', $userAccount->id)->where('type', '=', 'deposit')->get();
 
-        return view('account.statement', compact('transfersMade', 'transfersReceived'));
+        return view('account.statement', compact('transfersMade', 'transfersReceived', 'deposits'));
     }
 }

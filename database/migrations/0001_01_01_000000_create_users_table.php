@@ -16,7 +16,6 @@ return new class extends Migration
             $table->string('name');
             $table->string('email')->unique();
             $table->string('cpf', 14)->unique(); // CPF com máscara 000.000.000-00
-            // $table->string('cpf')->unique(); // !!!!REMOVIDO CPF criptografado!!!!
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->rememberToken();

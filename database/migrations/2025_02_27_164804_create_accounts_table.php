@@ -15,8 +15,6 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->decimal('balance', 11, 2)->default(0.00); // Saldo da conta
-            // $table->decimal('credit_limit', 11, 2)->default(0.00); // Limite de crédito
-            // $table->decimal('credit_used', 11, 2)->default(0.00); // Crédito utilizado
             $table->decimal('available_for_withdrawal', 11, 2)->default(0.00); // Valor disponível para saque
             $table->timestamps();
         });

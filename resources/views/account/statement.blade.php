@@ -77,7 +77,7 @@
                                     <th>Valor</th>
                                     <th>Data e Hora</th>
                                     <th>Status</th>
-                                    <th></th>
+                                    {{-- <th></th> --}}
                                 </tr>
                             </thead>
                             <tbody>
@@ -89,10 +89,48 @@
                                         <td>R$ {{ number_format($transfer->amount, 2, ',', '.') }}</td>
                                         <td>{{ date('d/m/Y H:i', strtotime($transfer->created_at)) }}</td>
                                         <td>{{ $transfer->status }}</td>
-                                        <td>
+                                        {{-- <td>
                                             <form action="{{ route('transaction.reverse') }}" method="POST">
                                                 @csrf
                                                 <input type="hidden" name="transactionId" value="{{ $transfer->id }}">
+                                                <button type="submit" class="btn btn-danger">Reverter</button>
+                                            </form>
+                                        </td> --}}
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+
+
+                    <!-- Tabela de Depósitos -->
+                    <h3 class="mt-4 text-white px-2">Depósitos realizados</h3>
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <thead class="text-white">
+                                <tr>
+                                    <th>ID</th>
+                                    <th>De</th>
+                                    {{-- <th>CPF</th> --}}
+                                    <th>Valor</th>
+                                    <th>Data e Hora</th>
+                                    <th>Status</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($deposits as $deposit)
+                                    <tr>
+                                        <td>{{ $deposit->id }}</td>
+                                        <td>{{ $deposit->origin_account_user_name }}</td>
+                                        {{-- <td>{{ $deposit->origin_account_user_cpf }}</td> --}}
+                                        <td>R$ {{ number_format($deposit->amount, 2, ',', '.') }}</td>
+                                        <td>{{ date('d/m/Y H:i', strtotime($deposit->created_at)) }}</td>
+                                        <td>{{ $deposit->status }}</td>
+                                        <td>
+                                            <form action="{{ route('transaction.reverse') }}" method="POST">
+                                                @csrf
+                                                <input type="hidden" name="transactionId" value="{{ $deposit->id }}">
                                                 <button type="submit" class="btn btn-danger">Reverter</button>
                                             </form>
                                         </td>

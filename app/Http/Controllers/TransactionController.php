@@ -212,8 +212,8 @@ class TransactionController extends Controller
 
         $originAccount = Auth::user()->account;
 
-        //Barra a reversão caso ela deixe a conta negativada
-        if($originAccount->balance < $transaction->amount) {
+        //Barra a reversão do depósito caso ela deixe a conta negativada
+        if($originAccount->balance < $transaction->amount && $transaction->type == 'deposit') {
             return redirect()->route('account.statement')->with('error', 'Saldo insuficiênte para reversão!');
         }
 
@@ -234,7 +234,7 @@ class TransactionController extends Controller
         $destinationAccount = Account::find($transaction->destination_account_id);
 
         //Barra a reversão caso a conta destino nao tenha saldo suficiênte
-        if($destinationAccount->balance < $transaction->amount) {
+        if($destinationAccount->balance < $transaction->amount && $transaction->type = 'transfer') {
             return redirect()->route('account.statement')->with('error', 'Saldo insuficiênte da conta destino para reversão!');
         }
 
