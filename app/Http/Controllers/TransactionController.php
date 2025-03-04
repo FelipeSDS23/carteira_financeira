@@ -8,10 +8,10 @@ use App\Models\User;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-// use App\Rules\CpfValidation;
 use Illuminate\Support\Facades\DB;
 use App\http\Requests\DepositRequest;
 use App\http\Requests\TransferRequest;
+use App\http\Requests\ReverseTransactionRequest;
 
 class TransactionController extends Controller
 {
@@ -165,17 +165,10 @@ class TransactionController extends Controller
     /**
      *  Reverte a transação
      */
-    public function reverseTransaction(Request $request)
+    public function reverseTransaction(ReverseTransactionRequest $request)
     {
-        //Validações
-        $rules = [
-            'transactionId' => 'required|exists:transactions,id', // Verifica se existe um ID na tabela 'transactions'
-        ];
-        $feedback = [
-            'transactionId.required' => 'O campo transactionId é obrigatório.',
-            'transactionId.exists' => 'O ID da transação não existe.',
-        ];
-        $request->validate($rules, $feedback);
+        //Validação do input do formulário
+        $request->validated();
 
         //Recupera a transação
         $transaction = Transaction::find($request->transactionId);
