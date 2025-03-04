@@ -8,8 +8,10 @@ use App\Models\User;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Rules\CpfValidation;
+// use App\Rules\CpfValidation;
 use Illuminate\Support\Facades\DB;
+use App\http\Requests\DepositRequest;
+use App\http\Requests\TransferRequest;
 
 class TransactionController extends Controller
 {
@@ -42,16 +44,10 @@ class TransactionController extends Controller
     /**
      * Realiza e registra o depósito
      */
-    public function makeDeposit(Request $request)
+    public function makeDeposit(DepositRequest $request)
     {
         //Validação do input do formulário
-        $request->merge(['amount' => $this->convertToDatabaseValue($request->amount)]); //Converte o valor do campo amount antes de validá-lo, convertendo-o do formato brasileiro (100,00) para o formato internacional (100.00).
-        $rules = ['amount' => 'required|numeric'];
-        $feedback = [
-            'amount.required' => 'O campo valor é obrigatório.',
-            'amount.numeric' => 'Valor inválido. Tente novamente.'
-        ];
-        $request->validate($rules, $feedback);
+        $request->validated();
 
         $amount = (float) $request->amount;
 
@@ -94,32 +90,21 @@ class TransactionController extends Controller
     /**
      * Realiza e registra a transferência
      */
-    public function makeTransfer(Request $request)
+    public function makeTransfer(TransferRequest $request)
     {
-        //Validação dos inputs do formulário
-        $request->merge(['amount' => $this->convertToDatabaseValue($request->amount)]); //Converte o valor do campo amount antes de validá-lo, convertendo-o do formato brasileiro (100,00) para o formato internacional (100.00).
-        $rules = [
-            'amount' => 'required|numeric',
-            'identification' => 'required|in:cpf,email',
-        ];
-        if($request->identification == 'cpf') {
-            $rules['userIdentifier'] = ['required', new CpfValidation()];
-        }
-        if($request->identification == 'email') {
-            $rules['userIdentifier'] = 'required|email';
-        }
-        $feedback = [
-            'amount.required' => 'O campo valor é obrigatório.',
-            'amount.numeric' => 'Valor inválido. Tente novamente.',
-            'userIdentifier.required' => 'O campo CPF/E-mail é obrigatório.',
-        ];
-        $request->validate($rules, $feedback);
+        //Validação do input do formulário
+        $request->validated();
 
         //Recupera usuário associado a conta destino de acordo com o identificador (cpf ou email)
         if ($request->identification == 'cpf') {
             $destinationUser = User::where('cpf', $request->userIdentifier)->first();
         } elseif ($request->identification == 'email') {
             $destinationUser = User::where('email', $request->userIdentifier)->first();
+        }
+
+        //Valida se o usuário está transferindo para si mesmo
+        if($destinationUser == Auth::user()) {
+            return redirect()->route('transaction.transfer')->with('error', 'Não é possível realizar transferencias para você mesmo!');
         }
     
         //Valida se a conta destino e usúario destino existem
@@ -256,14 +241,5 @@ class TransactionController extends Controller
         }
         
     }
-
-    /**
-     *  Formata moeda para realizar operações matemáticas ou armazenar no banco de dados Ex: 100,00 para 100.00
-     */
-    private function convertToDatabaseValue($value)
-    {
-        return str_replace(',', '.', str_replace('.', '', $value));
-    }
-
 
 }
