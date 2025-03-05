@@ -29,15 +29,21 @@ class AccountController extends Controller
     public function statement()
     {
         $user = Auth::user();
-        $userAccount = Auth::user()->account;
+        $userAccount = $user->account;
 
-        //Recupera todas as transferências realizadas pelo usuário autenticado
-        $transfersMade = Transaction::where('account_id', $userAccount->id)->where('type', '!=', 'deposit')->get();
-        //Recupera todas as transferências recebidas pelo usuário autenticado
-        $transfersReceived = Transaction::where('destination_account_id', $userAccount->id)->where('type', '!=', 'deposit')->get();
-        //Recupera todas os depósitos recebidas pelo usuário autenticado
-        $deposits = Transaction::where('destination_account_id', $userAccount->id)->where('type', '=', 'deposit')->get();
+        // Recupera todas as transações realizadas, recebidas e depósitos
+        $transactions = Transaction::with(['account.user', 'destinationAccount.user'])
+            ->where(function($query) use ($userAccount) {
+                $query->where('account_id', $userAccount->id)
+                    ->orWhere('destination_account_id', $userAccount->id);
+            })->get();
+
+        // Filtra as transferências feitas, recebidas e depósitos
+        $transfersMade = $transactions->where('account_id', $userAccount->id)->where('type', '!=', 'deposit');
+        $transfersReceived = $transactions->where('destination_account_id', $userAccount->id)->where('type', '!=', 'deposit');
+        $deposits = $transactions->where('destination_account_id', $userAccount->id)->where('type', '=', 'deposit');
 
         return view('account.statement', compact('transfersMade', 'transfersReceived', 'deposits'));
     }
+
 }

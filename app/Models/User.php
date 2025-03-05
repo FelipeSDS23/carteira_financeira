@@ -44,7 +44,6 @@ class User extends Authenticatable implements MustVerifyEmail
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
-            // 'cpf' => 'hashed', // !!!!REMOVIDO CRIPTOGRAFIA DO CPF!!!!
         ];
     }
 

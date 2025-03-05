@@ -58,11 +58,7 @@ class TransactionController extends Controller
             //Cria o registro da transação
             $transactionData = [
                 'account_id' => Auth::user()->account->id,
-                'origin_account_user_name' => 'Depósito',
-                'origin_account_user_cpf' => Auth::user()->cpf,
                 'destination_account_id' => Auth::user()->account->id,
-                'destination_account_user_name' => Auth::user()->name,
-                'destination_account_user_cpf' => Auth::user()->cpf,
                 'amount' => $amount,
                 'type' => 'deposit',
                 'status' => 'approved'
@@ -130,11 +126,7 @@ class TransactionController extends Controller
             //Dados da transação
             $transactionData = [
                 'account_id' => Auth::user()->account->id,
-                'origin_account_user_name' => Auth::user()->name,
-                'origin_account_user_cpf' => Auth::user()->cpf,
                 'destination_account_id' => $destinationUserAccount->id,
-                'destination_account_user_name' => $destinationUser->name,
-                'destination_account_user_cpf' => $destinationUser->cpf,
                 'amount' => $amount,
                 'type' => 'transfer',
                 'status' => 'approved'
@@ -170,8 +162,8 @@ class TransactionController extends Controller
         //Validação do input do formulário
         $request->validated();
 
-        //Recupera a transação
-        $transaction = Transaction::find($request->transactionId);
+        //Recupera a transação com os dados das contas origem e destino, além dos dados dos usuários donos das contas origem e destino 
+        $transaction = Transaction::with(['account.user', 'destinationAccount.user'])->find($request->transactionId);
 
         //Verifica se a transação existe
         if(!$transaction) {
@@ -179,7 +171,7 @@ class TransactionController extends Controller
         }
 
         //Verifica se a transação a ser revertida foi realizada pelo usuário que está autenticado
-        if($transaction->origin_account_user_cpf != Auth::user()->cpf) {
+        if($transaction->account->user->cpf != Auth::user()->cpf) {
             return redirect()->route('account.statement')->with('error', 'Transação não encontrada!');
         }
 
@@ -188,18 +180,16 @@ class TransactionController extends Controller
             return redirect()->route('account.statement')->with('error', 'Transação já revertida!');
         }
 
-        $originAccount = Auth::user()->account;
-
         //Barra a reversão do depósito caso ela deixe a conta negativada
-        if($originAccount->balance < $transaction->amount && $transaction->type == 'deposit') {
+        if($transaction->account->balance < $transaction->amount && $transaction->type == 'deposit') {
             return redirect()->route('account.statement')->with('error', 'Saldo insuficiênte para reversão!');
         }
 
         //Realiza a reversão do depósito
         if($transaction->type == 'deposit') {
-            $originAccount->update([
-                'balance' => $originAccount->balance - $transaction->amount,
-                'available_for_withdrawal' => $originAccount->available_for_withdrawal + $transaction->amount
+            $transaction->account->update([
+                'balance' => $transaction->account->balance - $transaction->amount,
+                'available_for_withdrawal' => $transaction->account->available_for_withdrawal + $transaction->amount
             ]);
 
             $transaction->update([
@@ -209,21 +199,19 @@ class TransactionController extends Controller
             return redirect()->route('account.dashboard')->with('success', 'Depósito revertido com sucesso!');
         }
 
-        $destinationAccount = Account::find($transaction->destination_account_id);
-
         //Barra a reversão caso a conta destino nao tenha saldo suficiênte
-        if($destinationAccount->balance < $transaction->amount && $transaction->type = 'transfer') {
+        if($transaction->destinationAccount->balance < $transaction->amount && $transaction->type = 'transfer') {
             return redirect()->route('account.statement')->with('error', 'Saldo insuficiênte da conta destino para reversão!');
         }
 
         //Realiza a reversão de transferência
         if($transaction->type == 'transfer') {
-            $destinationAccount->update([
-                'balance' => $destinationAccount->balance - $transaction->amount
+            $transaction->destinationAccount->update([
+                'balance' => $transaction->destinationAccount->balance - $transaction->amount
             ]);
 
-            $originAccount->update([
-                'balance' => $originAccount->balance + $transaction->amount
+            $transaction->account->update([
+                'balance' => $transaction->account->balance + $transaction->amount
             ]);
 
             $transaction->update([

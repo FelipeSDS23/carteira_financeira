@@ -46,8 +46,8 @@
                                 @foreach ($transfersMade as $transfer)
                                     <tr>
                                         <td>{{ $transfer->id }}</td>
-                                        <td>{{ $transfer->destination_account_user_name }}</td>
-                                        <td>{{ $transfer->destination_account_user_cpf }}</td>
+                                        <td>{{ $transfer->destinationAccount->user->name }}</td>
+                                        <td>{{ $transfer->destinationAccount->user->cpf }}</td>
                                         <td>R$ {{ number_format($transfer->amount, 2, ',', '.') }}</td>
                                         <td>{{ date('d/m/Y H:i', strtotime($transfer->created_at)) }}</td>
                                         <td>{{ $transfer->status }}</td>
@@ -84,8 +84,8 @@
                                 @foreach ($transfersReceived as $transfer)
                                     <tr>
                                         <td>{{ $transfer->id }}</td>
-                                        <td>{{ $transfer->origin_account_user_name }}</td>
-                                        <td>{{ $transfer->origin_account_user_cpf }}</td>
+                                        <td>{{ $transfer->account->user->name }}</td>
+                                        <td>{{ $transfer->account->user->cpf }}</td>
                                         <td>R$ {{ number_format($transfer->amount, 2, ',', '.') }}</td>
                                         <td>{{ date('d/m/Y H:i', strtotime($transfer->created_at)) }}</td>
                                         <td>{{ $transfer->status }}</td>
@@ -122,7 +122,7 @@
                                 @foreach ($deposits as $deposit)
                                     <tr>
                                         <td>{{ $deposit->id }}</td>
-                                        <td>{{ $deposit->origin_account_user_name }}</td>
+                                        <td>{{ $deposit->type }}</td>
                                         {{-- <td>{{ $deposit->origin_account_user_cpf }}</td> --}}
                                         <td>R$ {{ number_format($deposit->amount, 2, ',', '.') }}</td>
                                         <td>{{ date('d/m/Y H:i', strtotime($deposit->created_at)) }}</td>
